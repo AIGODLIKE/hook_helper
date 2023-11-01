@@ -2,8 +2,8 @@ import bpy
 from mathutils import Vector
 
 bl_info = {
-    "name": "Gesture Helper",
-    "description": "手势助手,可以快速的使用手势运行blender 操作符或是更改属性",
+    "name": "Hook Helper",
+    "description": "点击重置，钩挂物体一起回到'钩挂创建点'",
     "author": "AIGODLIKE Community(BlenderCN辣椒, 会飞的键盘侠, 小萌新)",
     "version": (1, 0),
     "blender": (4, 0, 0),
@@ -37,12 +37,21 @@ class HookResetOperator(bpy.types.Operator):
         return {'FINISHED'}
 
 
+def draw(self, context):
+    layout = self.layout
+    layout.operator_context = 'EXEC_AREA'
+    if any([mod.type == 'HOOK' for mod in context.active_object.modifiers]):
+        layout.separator()
+        layout.operator(HookResetOperator.bl_idname)
+        
 def register():
     bpy.utils.register_class(HookResetOperator)
+    bpy.types.VIEW3D_MT_hook.append(draw)
 
 
 def unregister():
     bpy.utils.unregister_class(HookResetOperator)
+    bpy.types.VIEW3D_MT_hook.remove(draw)
 
 
 if __name__ == "__main__":
